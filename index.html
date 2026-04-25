@@ -5,101 +5,56 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>RicoRico 🍩</title>
   <script src="https://cdn.tailwindcss.com"></script>
-
-  <style>
-    .fade-update {
-      animation: fadeScale 0.25s ease;
-    }
-
-    @keyframes fadeScale {
-      0% {
-        transform: scale(0.95);
-        opacity: 0.5;
-      }
-      100% {
-        transform: scale(1);
-        opacity: 1;
-      }
-    }
-  </style>
-  
 </head>
 
 <body class="bg-pink-50">
 
 <script>
 const ADMIN_PASSWORD = "RicoRico220125";
-const whatsappLink = "https://wa.me/5492617025691?text=";
+const whatsappBase = "https://wa.me/5492617025691?text=";
 
 let isAdmin = false;
 let cart = [];
-let selectedCategory = null;
 
-document.addEventListener("keydown", function(e) {
-  if (e.key === "?" || (e.key === "/" && e.shiftKey)) {
-    loginAdmin();
-  }
-});
-
-let products = {
-
-  minidonas: [
-    { name: "Donitas Simples", price: 4000, img: "https://i.postimg.cc/25P6v5N2/simples.png" },
-    { name: "Donitas Chocolate", price: 4400, img: "https://i.postimg.cc/mBHxS8TR/Whats-App-Image-2026-04-20-at-08-52-18.jpg" },
-    { name: "Donitas Oreo", price: 5000, img: "https://i.postimg.cc/Cwc3N1z3/Whats-App-Image-2026-04-20-at-10-10-49.jpg" },
-    { name: "Donitas Coco", price: 4500, img: "https://i.postimg.cc/M6q1y2J3/Whats-App-Image-2026-04-21-at-20-11-53.jpg" },
-    { name: "Donitas Rocklets", price: 4800, img: "https://i.postimg.cc/2mj4yDwf/Whats-App-Image-2026-04-21-at-20-41-36.jpg" },
-    { name: "Donitas Crocantes", price: 4700, img: "https://i.postimg.cc/JzZbYtRF/Whats-App-Image-2026-04-20-at-10-10-48.jpg" },
-    { name: "Donitas Glaseadas", price: 4400, img: "https://i.postimg.cc/Q8JkPNJ2/Whats-App-Image-2026-04-21-at-20-13-52.jpg" },
-    { name: "Donitas Saborizadas", price: 4500, img: "https://i.postimg.cc/5bNphzGC/Whats-App-Image-2026-04-21-at-20-11-32.jpg" }
+// 🔥 productos (persistentes)
+let products = JSON.parse(localStorage.getItem("products")) || {
+  donas: [
+    { name: "Donitas Simples", price: 4000, img: "https://desvania.es/wp-content/uploads/2015/09/IMG_20210515_114348_025-1170x1170.jpg" },
+    { name: "Donitas Bañadas De Chocolate", price: 4400, "htps" },
+    { name: "Donitas De Oreo", price: 5000 },
+    { name: "Donitas De Coco", price: 4500 },
+    { name: "Donitas De Rocklets", price: 4800 },
+    { name: "Donitas Crocantes", price: 4700 },
+    { name: "Donitas Glaseadas", price: 4400 },
+    { name: "Donitas Saborizadas", price: 4500 }
   ],
-
   alfajores: [
-    { name: "Alfajores Maicena", price: 5000, img: "https://i.postimg.cc/2CWWM8zx/Whats-App-Image-2026-04-21-at-20-11-44.jpg" },
-    { name: "Alfajores Chocolate", price: 8500, img: "https://i.postimg.cc/yKjLvnpy/Whats-App-Image-2026-04-21-at-20-15-47.jpg" },
-    { name: "Alfajores Chips", price: 7000, img: "https://www.minutoneuquen.com/u/fotografias/m/2024/10/8/f1280x720-729554_861229_502.jpg" }
+    { name: "Alfajores Maicena", price: 5000 },
+    { name: "Alfajores Chocolate", price: 8500 },
+    { name: "Alfajores Chips", price: 7000 }
   ],
-
   galletas: [
-    { name: "Galletas Chips Chocolate", price: 3000, img: "https://i.postimg.cc/WNn5DgW7/Whats-App-Image-2026-04-23-at-19-41-09-(1).jpg" },
-    { name: "Galletas Bañadas Chocolate", price: 4000, img: "https://i.postimg.cc/BSkBPp5C/Whats-App-Image-2026-04-21-at-20-15-58.jpg" },
-    { name: "Galletas Saborizadas", price: 2700, img: "https://www.divinacocina.es/wp-content/uploads/2020/05/galletas-de-limon-detalle1.jpg" },
-    { name: "Galletas Marmoladas", price: 3200, img: "https://www.romisbakes.com/img/marble-cookies/marble-cookies-4-1200.webp" },
-    { name: "Galletas Craqueladas", price: 4500, img: "https://i.postimg.cc/51WJ8VPB/Whats-App-Image-2026-04-23-at-19-41-09.jpg" }
+    { name: "Galletas Chips Chocolate", price: 3000 },
+    { name: "Galletas Bañadas Chocolate", price: 4000 },
+    { name: "Galletas Saborizadas", price: 2700 },
+    { name: "Galletas Marmoladas", price: 3200 }
   ],
-
   bizcochuelos: [
-    { name: "Bizcochuelo Marmolado", price: 9500, img: "https://img-global.cpcdn.com/recipes/13b32ec6b3a662e6/680x781f0.5_0.5_1.0q80/bizcochuelo-marmolado-economico-facil-y-rendidor-sin-manteca-con-harina-leudante-foto-principal.webp" },
-    { name: "Bizcochuelo Mandarina", price: 9500, img: "https://i.postimg.cc/yBxGJrKh/Whats-App-Image-2026-04-23-at-19-41-09-(2).jpg" },
-    { name: "Bizcochuelo Limón", price: 9500, img: "https://tn.com.ar/resizer/v2/sin-azucar-ni-harina-como-hacer-un-bizcochuelo-de-limon-rapido-y-con-solo-3-ingredientes-foto-gemini-DH2W3TV35FESJCQ7FF3NYPSBQQ.jpg?auth=050f72bb3a43b20eea8c3a5999cdb0d4fec573f3a35a963098fb7f3f7e86ce24&width=1440" },
-    { name: "Bizcochuelo Chocolate", price: 9500, img: "https://cdn0.recetasgratis.net/es/posts/9/2/3/bizcocho_de_castanas_de_caju_y_chocolate_78329_1200.webp" }
+    { name: "Bizcochuelo Marmolado", price: 9500 },
+    { name: "Bizcochuelo Mandarina", price: 9500 },
+    { name: "Bizcochuelo Limón", price: 9500 },
+    { name: "Bizcochuelo Chocolate", price: 9500 }
   ],
-
   budines: [
-    { name: "Budín Marmolado", price: 9500, img: "https://imag.bonviveur.com/bizcocho-marmolado-casero.webp" },
-    { name: "Budín Mandarina", price: 9500, img: "https://cdn.blog.paulinacocina.net/wp-content/uploads/2014/08/P1110285-001.jpg" },
-    { name: "Budín Limón", price: 9500, img: "https://i.postimg.cc/ZZ5G858P/Whats-App-Image-2026-04-23-at-19-41-08-(1).jpg" },
-    { name: "Budín Chocolate", price: 9500, img: "https://media.losandes.com.ar/p/3a1b78401c4ce8814ab264a734762758/adjuntos/368/imagenes/100/011/0100011447/1000x0/smart/budin-chocolate.jpg" }
+    { name: "Budín Marmolado", price: 9500 },
+    { name: "Budín Mandarina", price: 9500 },
+    { name: "Budín Limón", price: 9500 },
+    { name: "Budín Chocolate", price: 9500 }
   ],
-
   magdalenas: [
-    { name: "Magdalena Chips Chocolate", price: 5000, img: "https://i.postimg.cc/Hp1zBBF4/Whats-App-Image-2026-04-23-at-19-41-08.jpg" },
-    { name: "Magdalena Chocolate", price: 5000, img: "https://assets.tmecosys.com/image/upload/t_web_rdp_recipe_584x480/img/recipe/ras/Assets/65D0C118-F670-44B3-8F49-E6D2FC137C23/Derivates/E4F3E936-3EA9-4E11-A68A-00148356A657.jpg" },
-    { name: "Magdalena Vainilla", price: 5000, img: "https://i.postimg.cc/26bdXLYb/Whats-App-Image-2026-04-23-at-19-52-34.jpg" }
-  ],
-
-  tartitas: [
-    { name: "Capchat", price: 3500, img: "https://i.postimg.cc/50Lg2QrN/Whats-App-Image-2026-04-23-at-20-03-40-(2).jpg" },
-    { name: "Lemon Pie", price: 4000, img: "https://i.postimg.cc/VNS42VBk/Whats-App-Image-2026-04-23-at-20-03-40-(1).jpg" },
-    { name: "Tarta de fruta", price: 3500, img: "https://i.postimg.cc/66Cb9FsC/Whats-App-Image-2026-04-23-at-20-03-40.jpg" },
-    { name: "Tarta de coco", price: 3500, img: "https://i.postimg.cc/ZKFYG4JS/Whats-App-Image-2026-04-25-at-13-24-33.jpg" }
-  ],
- 
-  postrecitos: [
-    { name: "Postrecitos chocotorta", price: 1500, img: "https://estag.fimagenes.com/imagenesred/1994629_1.jpg?1" },
-    { name: "Postrecito oreo", price: 1500, img: "https://i.postimg.cc/3rtDPX1D/Whats-App-Image-2026-04-25-at-13-25-06.jpg" },
-    { name: "Postrecito Durazno", price: 1500, img: "https://i.postimg.cc/bwBgpXRQ/Whats-App-Image-2026-04-25-at-13-25-25.jpg" }
-    
+    { name: "Magdalena Chips Chocolate", price: 5000 },
+    { name: "Magdalena Chocolate", price: 5000 },
+    { name: "Magdalena Vainilla", price: 5000 }
   ]
 };
 
@@ -107,236 +62,161 @@ function save() {
   localStorage.setItem("products", JSON.stringify(products));
 }
 
-function loginAdmin() {
-  const pass = prompt("Contraseña admin");
+/* ================= ADMIN ================= */
+
+function login() {
+  const pass = prompt("Contraseña admin:");
   if (pass === ADMIN_PASSWORD) {
     isAdmin = true;
     render();
-  }
-}
-
-function updateName(cat, i, value) {
-  products[cat][i].name = value;
-  save();
-  render();
-}
-
-function createCategory() {
-  const name = prompt("Nombre de la nueva categoría:");
-
-  if (!name) return;
-
-  if (products[name]) {
-    alert("Esa categoría ya existe");
-    return;
-  }
-
-  products[name] = [];
-
-  save();   // importante si usas localStorage
-  render();
-}
-
-function addToCart(name, price) {
-  const item = cart.find(p => p.name === name);
-
-  if (item) {
-    if (item.qty >= 10) {
-      alert("Máximo 10 unidades por producto");
-      return;
-    }
-    item.qty += 1;
   } else {
-    cart.push({ name, price, qty: 1 });
+    alert("Incorrecto");
   }
-
-  // 👇 animación solo del producto agregado
-  setTimeout(() => {
-    const cards = document.querySelectorAll(".product-card");
-
-    cards.forEach(card => {
-      if (card.innerText.includes(name)) {
-        card.classList.add("fade-update");
-
-        setTimeout(() => {
-          card.classList.remove("fade-update");
-        }, 250);
-      }
-    });
-  }, 0);
-
-  render();
 }
 
-function deleteToCart(name) {
-  const item = cart.find(p => p.name === name);
+function addProduct(cat) {
+  const name = prompt("Nombre producto:");
+  const price = prompt("Precio:");
+  if (!name || !price) return;
 
-  if (!item) return;
-
-  item.qty -= 1;
-
-  if (item.qty <= 0) {
-    cart = cart.filter(p => p.name !== name);
-  }
-
-  render();
-}
-
-function total() {
-  return cart.reduce((acc, item) => acc + item.price * item.qty, 0);
-}
-
-function sendWhatsApp() {
-  const text =
-    "Pedido:%0A" +
-    cart.map(i => "- " + i.name + " x" + i.qty).join("%0A") +
-    "%0ATotal: $" + total();
-
-  window.open(whatsappLink + text, "_blank");
-}
-
-function updatePrice(cat, i, value) {
-  products[cat][i].price = Number(value);
+  products[cat].push({ name, price: Number(price) });
+  save();
   render();
 }
 
 function deleteProduct(cat, i) {
   products[cat].splice(i, 1);
+  save();
   render();
 }
+
+function editPrice(cat, i) {
+  const price = prompt("Nuevo precio:");
+  if (!price) return;
+
+  products[cat][i].price = Number(price);
+  save();
+  render();
+}
+
+/* ================= CART ================= */
+
+function addToCart(item) {
+  cart.push(item);
+  render();
+}
+
+function total() {
+  return cart.reduce((a,b) => a + b.price, 0);
+}
+
+function sendOrder() {
+  if (cart.length === 0) return alert("Carrito vacío");
+
+  const text =
+    "🍩 Pedido RicoRico:%0A" +
+    cart.map(i => "- " + i.name).join("%0A") +
+    "%0A%0ATotal: $" + total();
+
+  window.open(whatsappBase + text, "_blank");
+}
+
+/* ================= UI ================= */
 
 function render() {
   let html = "";
 
+  // HEADER
   html += `
-  <div class="bg-pink-500 text-white text-center p-6">
-    <h1 class="text-4xl font-bold italic tracking-wider">🍩 RICORICO</h1>
+    <div class="bg-pink-500 text-white text-center p-6">
+      <h1 class="text-4xl font-bold">🍩 RICORICO</h1>
 
-    ${cart.length > 0 ? `
-      <button onclick="sendWhatsApp()"
-        class="bg-white text-pink-600 px-4 py-2 mt-3 rounded">
-        Pedido ($${total()})
+      <button onclick="sendOrder()"
+        class="bg-white text-pink-600 px-4 py-2 mt-3 rounded-full font-bold">
+        🛒 Pedido ($${total()})
       </button>
-    ` : ""}
-  </div>
+    </div>
   `;
 
-html += `
-<div class="bg-white sticky top-0 z-50 shadow p-2 flex gap-2 overflow-x-auto">
-
-  <button onclick="selectedCategory=null; render()"
-    class="bg-gray-200 px-4 py-2 rounded-full text-sm font-semibold">
-    Todos
-  </button>
-
-  ${isAdmin ? `
-  <button onclick="createCategory()"
-    class="bg-black text-white px-3 py-2 rounded-full text-sm font-semibold">
-    + Nueva categoría
-  </button>
-` : ""}
-
-  ${Object.keys(products)
-  .sort()
-  .map(cat => `
-    <button onclick="selectedCategory='${cat}'; render()"
-  class="${selectedCategory === cat 
-    ? 'bg-pink-500 text-white' 
-    : 'bg-pink-100 text-pink-600'} px-4 py-2 rounded-full text-sm font-semibold whitespace-nowrap hover:bg-pink-500 hover:text-white transition">
-  ${cat}
-</button>
-  `).join("")}
-
-</div>
-`;
-
-  for (let cat in products) {
-
-  if (selectedCategory && selectedCategory !== cat) continue;
-  html += `<div class="p-4">
-    <h2 id="${cat}" class="text-xl font-bold text-pink-600 capitalize">${cat}</h2>
-
-    <div class="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">`;
-
-  products[cat].forEach((p, i) => {
+  // LOGIN BUTTON
+  if (!isAdmin) {
     html += `
-    <div class="product-card bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition">
-
-      <img src="${p.img}" 
-        class="w-full h-40 md:h-48 lg:h-52 object-cover transition-transform duration-300 hover:scale-105"/>
-
-      <div class="p-2">
-        <p class="font-bold">${p.name}</p>
-        <p>$${p.price}</p>
-
-        ${cart.find(c => c.name === p.name) ? `
-          <p class="text-sm text-gray-600">
-            Cantidad: ${cart.find(c => c.name === p.name).qty}
-          </p>
-        ` : ""}
-
-        <button onclick='addToCart("${p.name}", ${p.price})'
-  class="bg-pink-500 text-white w-full mt-1 rounded">
-  Agregar
-</button>
-
-${cart.find(c => c.name === p.name) ? `
-  <button onclick='deleteToCart("${p.name}")'
-    class="bg-red-500 text-white w-full mt-1 rounded">
-    Borrar
-  </button>
-` : ""}
-
-${isAdmin ? `
-  <input type="text"
-    value="${p.name}"
-    onchange="updateName('${cat}',${i},this.value)"
-    class="border w-full mt-1 rounded p-1"/>
-
-  <input type="number"
-    value="${p.price}"
-    onchange="updatePrice('${cat}',${i},this.value)"
-    class="border w-full mt-1 rounded p-1"/>
-
-  <button onclick="deleteProduct('${cat}',${i})"
-    class="bg-red-700 text-white w-full mt-1 rounded">
-    Eliminar
-  </button>
-` : ""}
-      </div>
-
-    </div>
+      <button onclick="login()"
+        class="fixed top-4 right-4 bg-yellow-400 px-3 py-1 rounded shadow">
+        Admin
+      </button>
     `;
-  });
+  }
 
-  html += `</div></div>`;
-}
+  // PANEL ADMIN
+  if (isAdmin) {
+    html += `
+      <div class="fixed right-4 top-4 w-72 bg-white shadow-xl p-4 rounded-xl border">
+        <h2 class="font-bold text-pink-600 mb-3">⚙️ PANEL ADMIN</h2>
 
-html += `
-<a href="https://wa.me/5492617025691" target="_blank"
-   class="fixed bottom-5 right-5 bg-green-500 hover:bg-green-600 text-white p-4 rounded-full shadow-lg flex items-center justify-center">
+        ${Object.keys(products).map(cat => `
+          <button onclick="addProduct('${cat}')"
+            class="bg-pink-500 text-white w-full mb-2 py-1 rounded capitalize">
+            + ${cat}
+          </button>
+        `).join("")}
+      </div>
+    `;
+  }
 
-  <!-- Icono teléfono -->
-  <svg xmlns="http://www.w3.org/2000/svg" 
-       class="h-6 w-6" fill="none" viewBox="0 0 24 24" 
-       stroke="currentColor">
-    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-      d="M3 5a2 2 0 012-2h3.28a1 1 0 01.95.68l1.2 3.6a1 1 0 01-.27 1.05l-2.2 2.2a16 16 0 006.6 6.6l2.2-2.2a1 1 0 011.05-.27l3.6 1.2a1 1 0 01.68.95V19a2 2 0 01-2 2h-1C10.07 21 3 13.93 3 5V5z"/>
-  </svg>
+  // PRODUCTS
+  for (let cat in products) {
+    html += `
+      <div class="p-4">
+        <h2 class="text-xl font-bold text-pink-600 capitalize mb-3">${cat}</h2>
 
-</a>
-`;
+        <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+    `;
 
-html += `
-<a href="https://instagram.com/ricodulce__" target="_blank"
-   class="fixed bottom-20 right-5 bg-pink-500 hover:bg-pink-600 text-white p-4 rounded-full shadow-lg flex items-center justify-center">
+    products[cat].forEach((p, i) => {
+      html += `
+        <div class="bg-white p-3 rounded shadow">
 
-  <svg xmlns="http://www.w3.org/2000/svg" 
-       class="h-6 w-6" viewBox="0 0 24 24" fill="currentColor">
-    <path d="M7.75 2C4.57 2 2 4.57 2 7.75v8.5C2 19.43 4.57 22 7.75 22h8.5C19.43 22 22 19.43 22 16.25v-8.5C22 4.57 19.43 2 16.25 2h-8.5zM12 7a5 5 0 110 10 5 5 0 010-10zm6.5-.75a1.25 1.25 0 11-2.5 0 1.25 1.25 0 012.5 0zM12 9a3 3 0 100 6 3 3 0 000-6z"/>
-  </svg>
+          <p class="font-bold">${p.name}</p>
+          <p class="text-pink-600 font-semibold">$${p.price}</p>
 
-</a>
+          <button onclick='addToCart(${JSON.stringify(p)})'
+            class="bg-pink-500 text-white w-full mt-2 rounded">
+            Agregar
+          </button>
+
+          <a href="${whatsappBase}${encodeURIComponent("Hola quiero: " + p.name)}"
+             target="_blank"
+             class="block text-center bg-green-500 text-white mt-2 py-1 rounded">
+            WhatsApp
+          </a>
+
+          ${isAdmin ? `
+            <button onclick="editPrice('${cat}',${i})"
+              class="bg-yellow-400 w-full mt-2">
+              Editar
+            </button>
+
+            <button onclick="deleteProduct('${cat}',${i})"
+              class="bg-red-500 text-white w-full mt-1">
+              Eliminar
+            </button>
+          ` : ""}
+
+        </div>
+      `;
+    });
+
+    html += `</div></div>`;
+  }
+
+  // FLOAT WHATSAPP
+  html += `
+    <a href="${whatsappBase}${encodeURIComponent("Hola quiero hacer un pedido")}"
+       target="_blank"
+       class="fixed bottom-6 right-6 bg-green-500 p-4 rounded-full text-white text-xl shadow-lg">
+      💬
+    </a>
   `;
 
   document.body.innerHTML = html;
